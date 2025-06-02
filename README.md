@@ -1,12 +1,12 @@
-# 🛒 Shopping Cart CLI App (Go)
+# 🛒 Shopping Cart App (Go)
 
-A beginner-friendly, command-line shopping cart application written in **Golang**, designed to help new developers practice and apply **core Go concepts** through a realistic mini project.
+A beginner-friendly, shopping cart application written in **Golang**, designed to help new developers practice and apply **core Go concepts** through a realistic mini project.
 
 ---
 
 ## 📚 Project Overview
 
-This CLI app simulates a simplified shopping cart experience. Users can:
+This app simulates a simplified shopping cart experience. Users can:
 - Browse a list of available products
 - Add items to their shopping cart
 - Remove items from the cart
