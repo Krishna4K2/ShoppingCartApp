@@ -4,26 +4,33 @@ import (
 	"fmt"
 )
 
-type product struct {
-	name  string
-	Id    int
-	price float64
-}
+type (
+	product struct {
+		name  string
+		Id    int
+		price float64
+	}
+	cartItem struct {
+		product  product
+		quantity int
+	}
+)
 
-var products = []product{
-	{name: "Apple", Id: 1, price: 0.5},
-	{name: "Banana", Id: 2, price: 0.3},
-	{name: "Orange", Id: 3, price: 0.8},
-	{name: "Grapes", Id: 4, price: 2.0},
-	{name: "Mango", Id: 5, price: 1.5},
-	{name: "Pineapple", Id: 6, price: 3.0},
-	{name: "Strawberry", Id: 7, price: 2.5},
-	{name: "Blueberry", Id: 8, price: 4.0},
-	{name: "Watermelon", Id: 9, price: 1.0},
-	{name: "Peach", Id: 10, price: 1.2},
-}
-
-var cart []product
+var (
+	products = []product{
+		{name: "Apple", Id: 1, price: 0.5},
+		{name: "Banana", Id: 2, price: 0.3},
+		{name: "Orange", Id: 3, price: 0.8},
+		{name: "Grapes", Id: 4, price: 2.0},
+		{name: "Mango", Id: 5, price: 1.5},
+		{name: "Pineapple", Id: 6, price: 3.0},
+		{name: "Strawberry", Id: 7, price: 2.5},
+		{name: "Blueberry", Id: 8, price: 4.0},
+		{name: "Watermelon", Id: 9, price: 1.0},
+		{name: "Peach", Id: 10, price: 1.2},
+	}
+	cart []cartItem
+)
 
 func main() {
 	var (
@@ -52,12 +59,22 @@ func main() {
 			fmt.Print("Enter the product ID to add to cart: ")
 			fmt.Scanln(&productId)
 			found := false
-			for _, p := range products {
-				if p.Id == productId {
-					cart = append(cart, p)
-					fmt.Println("Product added to cart:", p.name)
+			for i, item := range cart {
+				if item.product.Id == productId {
+					cart[i].quantity++
+					fmt.Printf("Increased quantity of %s to %d.\n", item.product.name, cart[i].quantity)
 					found = true
 					break
+				}
+			}
+			if !found {
+				for _, p := range products {
+					if p.Id == productId {
+						cart = append(cart, cartItem{product: p, quantity: 1})
+						fmt.Printf("Added %s to cart.\n", p.name)
+						found = true
+						break
+					}
 				}
 			}
 			if !found {
@@ -70,9 +87,14 @@ func main() {
 			fmt.Scanln(&productId)
 			found := false
 			for i, p := range cart {
-				if p.Id == productId {
-					cart = append(cart[:i], cart[i+1:]...)
-					fmt.Println("Product removed from cart:", p.name)
+				if p.product.Id == productId {
+					if cart[i].quantity > 1 {
+						cart[i].quantity--
+						fmt.Printf("Decreased quantity of %s to %d.\n", p.product.name, cart[i].quantity)
+					} else {
+						cart = append(cart[:i], cart[i+1:]...)
+						fmt.Println("Product removed from cart:", p.product.name)
+					}
 					found = true
 					break
 				}
@@ -86,9 +108,12 @@ func main() {
 				fmt.Println("Your cart is empty.")
 			} else {
 				fmt.Println("Your cart contains:")
+				var total float64
 				for _, p := range cart {
-					fmt.Println("Name:", p.name, "| ID:", p.Id, "| Price: $", p.price)
+					fmt.Println("Name:", p.product.name, "| ID:", p.product.Id, "| Price: $", p.product.price, "| Quantity:", p.quantity)
+					total += p.product.price * float64(p.quantity)
 				}
+				fmt.Printf("Your total amount is: $%.2f\n", total)
 			}
 		case 5:
 			fmt.Println("Check out...")
@@ -98,7 +123,7 @@ func main() {
 				var total float64
 				fmt.Println("Calculating total price...")
 				for _, p := range cart {
-					total += p.price
+					total += p.product.price * float64(p.quantity)
 				}
 				fmt.Printf("Your total amount is: $%.2f\n", total)
 				cart = nil // Clear the cart after checkout
@@ -107,7 +132,7 @@ func main() {
 		case 6:
 			fmt.Println("Exiting the application...")
 			shopping = "Exit"
-			fmt.Println("Thank you for using the Shopping Cart APP!")
+			fmt.Println("Thank you for Shopping! Have a great day!")
 		default:
 			fmt.Println("Invalid option. Please try again.")
 		}
